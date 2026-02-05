@@ -1,5 +1,6 @@
 /**
  * LEXXA BARBERIA - Main Script
+ * Full Integrated with Smooth Sequence Animation
  */
 
 // 1. DATA CONFIGURATION
@@ -9,14 +10,14 @@ const branchData = {
         location: 'Jl. Ir. H. Juanda',
         address: 'Jl. Ir. H. Juanda, Air Putih, Kec. Samarinda Ulu, Kota Samarinda, Kalimantan Timur 75124',
         services: ['Wash', 'Curly Perm', 'Haircut', 'Massage'],
-        mapUrl: 'https://www.google.com/maps/search/?api=1&query=Lexxa+Barberia+Juanda'
+        mapUrl: 'https://maps.google.com/?q=Lexxa+Barberia+Juanda'
     },
     'wijaya': {
         studio: 'LEXXA BARBERIA',
         location: 'Jl. Wijaya Kusuma',
         address: 'Jl. Wijaya Kusuma No.12, Kec. Samarinda Ulu, Kota Samarinda, Kalimantan Timur 75124',
         services: ['Haircut', 'Wash', 'Hair Dyeing', 'Massage'],
-        mapUrl: 'https://www.google.com/maps/search/?api=1&query=Lexxa+Barberia+Wijaya+Kusuma'
+        mapUrl: 'https://maps.google.com/?q=Lexxa+Barberia+Wijaya'
     }
 };
 
@@ -24,6 +25,8 @@ const branchData = {
 const navbar = document.getElementById('mainNavbar');
 const menuToggle = document.getElementById('menuToggle');
 const navOverlay = document.getElementById('navOverlay');
+const canvas = document.getElementById("bg-sequence");
+const context = canvas.getContext("2d");
 
 // 2. NAVBAR SCROLL LOGIC
 window.addEventListener('scroll', () => {
@@ -34,7 +37,7 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// 3. MENU TOGGLE (3 DOTS / HAMBURGER)
+// 3. MENU TOGGLE
 menuToggle.onclick = () => {
     menuToggle.classList.toggle('open');
     navOverlay.classList.toggle('active');
@@ -47,8 +50,6 @@ document.querySelectorAll('.menu-item').forEach(item => {
         const targetId = item.getAttribute('href');
         if (targetId.startsWith('#')) {
             e.preventDefault();
-            
-            // Close menu
             menuToggle.classList.remove('open');
             navOverlay.classList.remove('active');
             document.body.style.overflow = 'auto';
@@ -69,13 +70,11 @@ function changeBranch(branchKey, element) {
     const data = branchData[branchKey];
     if (!data) return;
 
-    // Update UI
     document.getElementById('studio-name').innerText = data.studio;
     document.getElementById('location-title').innerText = data.location;
     document.getElementById('address-text').innerText = data.address;
     document.getElementById('map-link').onclick = () => window.open(data.mapUrl, '_blank');
 
-    // Update Tags
     const tagContainer = document.getElementById('service-tags');
     tagContainer.innerHTML = '';
     data.services.forEach(service => {
@@ -85,11 +84,9 @@ function changeBranch(branchKey, element) {
         tagContainer.appendChild(span);
     });
 
-    // Toggle Active Tab
     document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
     if (element) element.classList.add('active');
 
-    // Auto-filter artists based on branch
     filterLogic(branchKey);
     syncFilterButtons(branchKey);
 }
@@ -124,53 +121,40 @@ function syncFilterButtons(branchKey) {
     if (targetBtn) targetBtn.classList.add('active');
 }
 
-function scrollToArtist() {
-    const section = document.getElementById('artist-section');
-    if (section) section.scrollIntoView({ behavior: 'smooth' });
-}
+// ---------------------------------------------------------
+// 7. SEQUENCE ANIMATION LOGIC (CANVAS)
+// ---------------------------------------------------------
 
-// 7. INITIALIZE ON LOAD
-window.onload = () => {
-    // Default to Juanda
-    changeBranch('juanda', document.querySelector('.tab.active'));
-    
-    // Default to show all artists
-    filterLogic('all');
-};
-const canvas = document.getElementById("bg-sequence");
-const context = canvas.getContext("2d");
-
-const frameCount = 240; // Total foto sequence kamu
+const frameCount = 240;
 const currentFrame = index => (
   `img/sequence/ezgif-frame-${(index + 1).toString().padStart(3, '0')}.jpg`
 );
 
 const images = [];
 const airbnb = { frame: 0 };
+let isInitialLoad = true; // Menandai saat web baru dibuka
 
-// Pre-load semua gambar agar tidak berkedip saat scroll
+// Pre-load gambar
 for (let i = 0; i < frameCount; i++) {
-  const img = new Image();
-  img.src = currentFrame(i);
-  images.push(img);
+    const img = new Image();
+    img.src = currentFrame(i);
+    images.push(img);
 }
-// --- BAGIAN YANG DIPERBAIKI (GANTI DARI SINI) ---
 
-// Fungsi menggambar gambar ke canvas dengan optimasi performa
 function render() {
-    // Gunakan offsetWidth agar sesuai dengan ukuran container, bukan seluruh layar
     const parent = document.getElementById('branch-info');
+    if (!parent) return;
+
     canvas.width = parent.clientWidth;
     canvas.height = parent.clientHeight;
     
     const img = images[airbnb.frame];
-    if (!img || !img.complete) return; // Cek apakah gambar benar-benar sudah siap
+    if (!img || !img.complete) return;
 
     const imgRatio = img.width / img.height;
     const canvasRatio = canvas.width / canvas.height;
     let dWidth, dHeight, dx, dy;
 
-    // Logika Cover (tetap dipertahankan agar background penuh)
     if (imgRatio > canvasRatio) {
         dHeight = canvas.height;
         dWidth = dHeight * imgRatio;
@@ -187,22 +171,20 @@ function render() {
     context.drawImage(img, dx, dy, dWidth, dHeight);
 }
 
-// Deteksi Scroll yang lebih responsif
+// Event Scroll yang sudah dikalibrasi agar tidak terlalu cepat
 window.addEventListener("scroll", () => {
+    isInitialLoad = false; // Jika user scroll, matikan animasi otomatis
+
     const section = document.getElementById('branch-info');
     const scrollTop = window.scrollY;
-    const winHeight = window.innerHeight;
-    
-    // Titik awal: saat bagian bawah layar menyentuh bagian atas section
-    // Titik akhir: saat bagian atas layar melewati bagian bawah section
     const sectionTop = section.offsetTop;
     const sectionHeight = section.offsetHeight;
     
-    const startAnim = sectionTop - winHeight; 
+    // Titik mulai: saat section mulai masuk ke area pandang (offset 100px)
+    const startAnim = sectionTop - 100; 
     const endAnim = sectionTop + sectionHeight;
 
     if (scrollTop >= startAnim && scrollTop <= endAnim) {
-        // Hitung progress relatif terhadap posisi section di layar
         const scrollFraction = (scrollTop - startAnim) / (endAnim - startAnim);
         
         const frameIndex = Math.min(
@@ -214,13 +196,36 @@ window.addEventListener("scroll", () => {
             airbnb.frame = frameIndex;
             requestAnimationFrame(render);
         }
+    } else if (scrollTop < startAnim) {
+        if (airbnb.frame !== 0) {
+            airbnb.frame = 0;
+            requestAnimationFrame(render);
+        }
     }
 });
 
-// Pastikan render pertama kali saat gambar dimuat
-images[0].onload = () => {
-    render();
+// 8. INITIALIZE ON LOAD
+window.onload = () => {
+    // Default UI
+    changeBranch('juanda', document.querySelector('.tab.active'));
+    filterLogic('all');
+
+    // Pastikan gambar pertama dimuat lalu render
+    images[0].onload = () => {
+        render();
+        
+        // Animasi Intro Otomatis (Frame 0 ke 60) agar tidak kaku
+        let introFrame = 0;
+        const introInterval = setInterval(() => {
+            if (!isInitialLoad || introFrame >= 60) {
+                clearInterval(introInterval);
+            } else {
+                airbnb.frame = introFrame;
+                render();
+                introFrame++;
+            }
+        }, 40); 
+    };
 };
 
-// Cek ulang jika window di-resize
 window.addEventListener("resize", render);
