@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEXXA BARBERIA - Branch & Artists</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <meta name="format-detection" content="telephone=no">
+</head>
+<body>
+
+    <nav class="navbar" id="mainNavbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="img/logo.jpg" alt="Logo">
+            </div>
+
+            <div class="nav-menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <div class="nav-overlay" id="navOverlay">
+                <ul class="nav-links">
+                    <li><a href="#" class="menu-item">HOME</a></li>
+                    <li><a href="#branch-info" class="menu-item">BRANCHES</a></li>
+                    <li><a href="#prices-section" class="menu-item">PRICE LIST</a></li>
+                    <li><a href="#artist-section" class="menu-item">HAIR ARTIST</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <img src="img/logo.jpg" alt="Lexxa Barberia Logo" class="hero-logo">
+            <h1 class="hero-headline">LEXXA BARBERIA</h1>
+            <div class="hero-btns">
+                <button class="btn btn-filled" onclick="scrollToArtist()">Book Appointment</button>
+                <button class="btn btn-outline-white" onclick="document.getElementById('artist-section').scrollIntoView({behavior:'smooth'})">Explore Artists</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="top-marquee">
+        <div class="marquee-content">
+            <img src="img/p1.PNG" alt="G1"> <img src="img/p2.PNG" alt="G2">
+            <img src="img/p3.PNG" alt="G3"> <img src="img/p4.PNG" alt="G4">
+            <img src="img/p5.jpeg" alt="G5"> <img src="img/p6.jpeg" alt="G6">
+            <img src="img/p7.jpeg" alt="G7"> <img src="img/p8.jpeg" alt="G8">
+            <img src="img/p9.jpeg" alt="G9">
+            <img src="img/p1.PNG" alt="G1"> <img src="img/p2.PNG" alt="G2">
+            <img src="img/p3.PNG" alt="G3"> <img src="img/p4.PNG" alt="G4">
+            <img src="img/p5.jpeg" alt="G5"> <img src="img/p6.jpeg" alt="G6">
+            <img src="img/p7.jpeg" alt="G7"> <img src="img/p8.jpeg" alt="G8">
+            <img src="img/p9.jpeg" alt="G9">
+        </div>
+    </div>
+
+    <div class="container" id="branch-info">
+        <div class="branch-info">
+            <p class="label-our">Our</p>
+            <h1 class="main-title">BRANCH</h1>
+            
+            <div class="location-box">
+                <p class="studio-name" id="studio-name">LEXXA BARBERIA</p>
+                <h2 class="location-title" id="location-title">Jl. Ir. H. Juanda</h2>
+                <p class="address" id="address-text">
+                    Jl. Ir. H. Juanda, Air Putih, Kec. Samarinda Ulu, Kota Samarinda, Kalimantan Timur 75124
+                </p>
+            </div>
+        
+            <div class="services">
+                <p class="sub-label">Available Services</p>
+                <div class="tag-container" id="service-tags"></div>
+            </div>
+        
+            <div class="action-buttons">
+                <button class="btn btn-filled" onclick="scrollToArtist()">Book Here</button>
+                <button class="btn btn-outline" id="map-link">See On Map</button>
+            </div>
+        
+            <div class="other-branches">
+                <p class="sub-label">Our Branches</p>
+                <div class="branch-tabs">
+                    <span class="tab active" onclick="changeBranch('juanda', this)">Jl. Ir. H. Juanda</span>
+                    <span class="tab" onclick="changeBranch('wijaya', this)">Jl. Wijaya Kusuma</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <section class="artist-section" id="artist-section">
+        <div class="container">
+            <div class="artist-header">
+                <h1>Book Your Artists <span>to</span></h1>
+                <h1>Help <strong>Find Your Style</strong></h1>
+            </div>
+
+            <div class="filter-bar">
+                <button class="filter-btn active" id="filter-all" onclick="filterArtistManual('all', this)">All</button>
+                <button class="filter-btn" id="filter-juanda" onclick="filterArtistManual('juanda', this)">Juanda</button>
+                <button class="filter-btn" id="filter-wijaya" onclick="filterArtistManual('wijaya', this)">Wijaya Kusuma</button>
+            </div>
+
+            <div class="artist-grid" id="artist-grid">
+                <a href="lutpi.html" class="artist-card-link">
+                    <div class="artist-card" data-branch="juanda">
+                        <img src="img/lut.png" alt="Lutfi">
+                        <div class="artist-label">
+                            <h3>LUTFI HAKIM</h3>
+                            <p>@luthfihakim21_</p>
+                        </div>
+                        <div class="arrow-up">!</div>
+                    </div>
+                </a>
+                
+                <a href="yusril.html" class="artist-card-link">
+                    <div class="artist-card" data-branch="wijaya">
+                        <img src="img/yus.png" alt="Yusril">
+                        <div class="artist-label">
+                            <h3>YUSRIL</h3>
+                            <p>@its_yusril29</p>
+                        </div>
+                        <div class="arrow-up">!</div>
+                    </div>
+                </a>
+                
+                <a href="tara.html" class="artist-card-link">
+                    <div class="artist-card" data-branch="wijaya">
+                        <img src="img/tar.png" alt="Tara">
+                        <div class="artist-label">
+                            <h3>TARA</h3>
+                            <p>@andibataraaa_</p>
+                        </div>
+                        <div class="arrow-up">!</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="prices-section" class="prices-section">
+        <div class="container">
+            <div class="price-header">
+                <p class="label-our">Premium Services</p>
+                <h1 class="main-title">PRICE LIST</h1>
+            </div>
+    
+            <div class="price-grid">
+                <div class="price-category">
+                    <h3>Signature Cuts</h3>
+                    <div class="price-item">
+                        <div class="item-info">
+                            <span class="item-name">Haircut Only</span>
+                            <span class="item-desc">Basic cut & quick styling</span>
+                        </div>
+                        <span class="item-price">60k</span>
+                    </div>
+                    <div class="price-item">
+                        <div class="item-info">
+                            <span class="item-name">Haircut Full Service</span>
+                            <span class="item-desc">Consultation, Cut, Wash, Hot Towel & Massage</span>
+                        </div>
+                        <span class="item-price">80k</span>
+                    </div>
+                    <div class="price-item">
+                        <div class="item-info">
+                            <span class="item-name">Shave</span>
+                            <span class="item-desc">Traditional beard & mustache trim</span>
+                        </div>
+                        <span class="item-price">30k</span>
+                    </div>
+                </div>
+    
+                <div class="price-category">
+                    <h3>Treatments</h3>
+                    <div class="price-item">
+                        <div class="item-info">
+                            <span class="item-name">Curly Perm</span>
+                            <span class="item-desc">Permanent wave for textured look</span>
+                        </div>
+                        <span class="item-price">300k</span>
+                    </div>
+                    <div class="price-item">
+                        <div class="item-info">
+                            <span class="item-name">Creambath</span>
+                            <span class="item-desc">Scalp treatment & relaxing massage</span>
+                        </div>
+                        <span class="item-price">50k</span>
+                    </div>
+                    <div class="price-item">
+                        <div class="item-info">
+                            <span class="item-name">Hair Wash</span>
+                            <span class="item-desc">Refreshing wash & hair tonic</span>
+                        </div>
+                        <span class="item-price">30k</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="price-footer">
+                <button class="btn btn-filled" onclick="scrollToArtist()">Book Appointment</button>
+            </div>
+        </div>
+    </section>
+
+    <footer style="padding: 50px; text-align: center; background: #F6F5F0; font-size: 12px; font-weight: 700;">
+        <p>&copy; 2026 LEXXA BARBERIA.</p>
+    </footer>
+
+    <script src="script.js" defer></script>
+</body>
+</html>
