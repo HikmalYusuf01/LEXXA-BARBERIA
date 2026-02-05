@@ -137,3 +137,73 @@ window.onload = () => {
     // Default to show all artists
     filterLogic('all');
 };
+const canvas = document.getElementById("bg-sequence");
+const context = canvas.getContext("2d");
+
+const frameCount = 240; // Total foto sequence kamu
+const currentFrame = index => (
+  `img/sequence/ezgif-frame-${(index + 1).toString().padStart(3, '0')}.jpg`
+);
+
+const images = [];
+const airbnb = { frame: 0 };
+
+// Pre-load semua gambar agar tidak berkedip saat scroll
+for (let i = 0; i < frameCount; i++) {
+  const img = new Image();
+  img.src = currentFrame(i);
+  images.push(img);
+}
+
+// Fungsi menggambar gambar ke canvas
+function render() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  
+  const img = images[airbnb.frame];
+  if (!img) return;
+
+  // Logika "Cover" agar gambar memenuhi layar tanpa distorsi
+  const imgRatio = img.width / img.height;
+  const canvasRatio = canvas.width / canvas.height;
+  let dWidth, dHeight, dx, dy;
+
+  if (imgRatio > canvasRatio) {
+    dHeight = canvas.height;
+    dWidth = dHeight * imgRatio;
+    dx = (canvas.width - dWidth) / 2;
+    dy = 0;
+  } else {
+    dWidth = canvas.width;
+    dHeight = dWidth / imgRatio;
+    dx = 0;
+    dy = (canvas.height - dHeight) / 2;
+  }
+
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.drawImage(img, dx, dy, dWidth, dHeight);
+}
+
+// Deteksi Scroll
+window.addEventListener("scroll", () => {
+  const section = document.getElementById('branch-info');
+  const sectionTop = section.offsetTop;
+  const sectionHeight = section.offsetHeight;
+  const scrollPos = window.scrollY - sectionTop;
+  
+  // Hitung persentase scroll dalam section (0 sampai 1)
+  const scrollFraction = Math.max(0, Math.min(1, scrollPos / (sectionHeight - window.innerHeight)));
+  
+  // Tentukan index frame berdasarkan persentase scroll
+  const frameIndex = Math.min(
+    frameCount - 1,
+    Math.floor(scrollFraction * frameCount)
+  );
+
+  airbnb.frame = frameIndex;
+  requestAnimationFrame(render);
+});
+
+// Jalankan saat pertama kali dibuka
+images[0].onload = render;
+window.addEventListener("resize", render);

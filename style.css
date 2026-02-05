@@ -580,3 +580,30 @@ body {
     border-color: var(--lexxa-red) !important;
     color: var(--lexxa-red) !important;
 }
+#branch-info {
+    position: relative;
+    overflow: hidden;
+    min-height: 120vh; /* Memberi ruang agar animasi terasa saat scroll */
+    background-color: #F6F5F0; /* Warna dasar krem */
+}
+
+#bg-sequence {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    z-index: 1;
+    opacity: 0.15; /* Efek samar-samar (0.9 transparan) */
+    pointer-events: none; /* Agar tidak mengganggu klik tombol */
+    object-fit: cover;
+}
+
+.branch-info {
+    position: relative;
+    z-index: 5; /* Memastikan teks di atas gambar */
+    padding: 80px 0;
+    display: flex;
+    flex-direction: column;
+    background: transparent !important; /* Hilangkan bg agar canvas terlihat */
+}
