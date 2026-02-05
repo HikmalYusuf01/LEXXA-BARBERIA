@@ -171,20 +171,24 @@ function render() {
     context.drawImage(img, dx, dy, dWidth, dHeight);
 }
 
-// Event Scroll yang sudah dikalibrasi agar tidak terlalu cepat
+// Deteksi Scroll yang dikalibrasi (DIPERLAMBAT)
 window.addEventListener("scroll", () => {
-    isInitialLoad = false; // Jika user scroll, matikan animasi otomatis
+    isInitialLoad = false; 
 
     const section = document.getElementById('branch-info');
     const scrollTop = window.scrollY;
+    
+    // Titik mulai: saat bagian atas section benar-benar di depan mata
     const sectionTop = section.offsetTop;
     const sectionHeight = section.offsetHeight;
-    
-    // Titik mulai: saat section mulai masuk ke area pandang (offset 100px)
-    const startAnim = sectionTop - 100; 
-    const endAnim = sectionTop + sectionHeight;
+    const winHeight = window.innerHeight;
+
+    // KUNCINYA DI SINI: Kita persempit area hitung agar pergantian frame lebih lambat
+    const startAnim = sectionTop; 
+    const endAnim = sectionTop + (sectionHeight * 0.8); // Animasi selesai sebelum section habis
 
     if (scrollTop >= startAnim && scrollTop <= endAnim) {
+        // Progress dihitung lebih detail
         const scrollFraction = (scrollTop - startAnim) / (endAnim - startAnim);
         
         const frameIndex = Math.min(
@@ -197,6 +201,7 @@ window.addEventListener("scroll", () => {
             requestAnimationFrame(render);
         }
     } else if (scrollTop < startAnim) {
+        // Kunci di frame 0 agar pembukaan tetap terlihat saat di atas
         if (airbnb.frame !== 0) {
             airbnb.frame = 0;
             requestAnimationFrame(render);
@@ -204,27 +209,25 @@ window.addEventListener("scroll", () => {
     }
 });
 
-// 8. INITIALIZE ON LOAD
+// Perbaikan Intro (DIPERLAMBAT)
 window.onload = () => {
-    // Default UI
     changeBranch('juanda', document.querySelector('.tab.active'));
     filterLogic('all');
 
-    // Pastikan gambar pertama dimuat lalu render
     images[0].onload = () => {
         render();
         
-        // Animasi Intro Otomatis (Frame 0 ke 60) agar tidak kaku
         let introFrame = 0;
         const introInterval = setInterval(() => {
-            if (!isInitialLoad || introFrame >= 60) {
+            // Kita percepat sedikit durasi intervalnya tapi kurangi frame per step
+            if (!isInitialLoad || introFrame >= 80) { 
                 clearInterval(introInterval);
             } else {
                 airbnb.frame = introFrame;
                 render();
                 introFrame++;
             }
-        }, 40); 
+        }, 60); // Diubah ke 60ms agar gerakan pembuka lebih santai/lambat
     };
 };
 
