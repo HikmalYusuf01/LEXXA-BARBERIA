@@ -154,56 +154,73 @@ for (let i = 0; i < frameCount; i++) {
   img.src = currentFrame(i);
   images.push(img);
 }
+// --- BAGIAN YANG DIPERBAIKI (GANTI DARI SINI) ---
 
-// Fungsi menggambar gambar ke canvas
+// Fungsi menggambar gambar ke canvas dengan optimasi performa
 function render() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  
-  const img = images[airbnb.frame];
-  if (!img) return;
+    // Gunakan offsetWidth agar sesuai dengan ukuran container, bukan seluruh layar
+    const parent = document.getElementById('branch-info');
+    canvas.width = parent.clientWidth;
+    canvas.height = parent.clientHeight;
+    
+    const img = images[airbnb.frame];
+    if (!img || !img.complete) return; // Cek apakah gambar benar-benar sudah siap
 
-  // Logika "Cover" agar gambar memenuhi layar tanpa distorsi
-  const imgRatio = img.width / img.height;
-  const canvasRatio = canvas.width / canvas.height;
-  let dWidth, dHeight, dx, dy;
+    const imgRatio = img.width / img.height;
+    const canvasRatio = canvas.width / canvas.height;
+    let dWidth, dHeight, dx, dy;
 
-  if (imgRatio > canvasRatio) {
-    dHeight = canvas.height;
-    dWidth = dHeight * imgRatio;
-    dx = (canvas.width - dWidth) / 2;
-    dy = 0;
-  } else {
-    dWidth = canvas.width;
-    dHeight = dWidth / imgRatio;
-    dx = 0;
-    dy = (canvas.height - dHeight) / 2;
-  }
+    // Logika Cover (tetap dipertahankan agar background penuh)
+    if (imgRatio > canvasRatio) {
+        dHeight = canvas.height;
+        dWidth = dHeight * imgRatio;
+        dx = (canvas.width - dWidth) / 2;
+        dy = 0;
+    } else {
+        dWidth = canvas.width;
+        dHeight = dWidth / imgRatio;
+        dx = 0;
+        dy = (canvas.height - dHeight) / 2;
+    }
 
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  context.drawImage(img, dx, dy, dWidth, dHeight);
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(img, dx, dy, dWidth, dHeight);
 }
 
-// Deteksi Scroll
+// Deteksi Scroll yang lebih responsif
 window.addEventListener("scroll", () => {
-  const section = document.getElementById('branch-info');
-  const sectionTop = section.offsetTop;
-  const sectionHeight = section.offsetHeight;
-  const scrollPos = window.scrollY - sectionTop;
-  
-  // Hitung persentase scroll dalam section (0 sampai 1)
-  const scrollFraction = Math.max(0, Math.min(1, scrollPos / (sectionHeight - window.innerHeight)));
-  
-  // Tentukan index frame berdasarkan persentase scroll
-  const frameIndex = Math.min(
-    frameCount - 1,
-    Math.floor(scrollFraction * frameCount)
-  );
+    const section = document.getElementById('branch-info');
+    const scrollTop = window.scrollY;
+    const winHeight = window.innerHeight;
+    
+    // Titik awal: saat bagian bawah layar menyentuh bagian atas section
+    // Titik akhir: saat bagian atas layar melewati bagian bawah section
+    const sectionTop = section.offsetTop;
+    const sectionHeight = section.offsetHeight;
+    
+    const startAnim = sectionTop - winHeight; 
+    const endAnim = sectionTop + sectionHeight;
 
-  airbnb.frame = frameIndex;
-  requestAnimationFrame(render);
+    if (scrollTop >= startAnim && scrollTop <= endAnim) {
+        // Hitung progress relatif terhadap posisi section di layar
+        const scrollFraction = (scrollTop - startAnim) / (endAnim - startAnim);
+        
+        const frameIndex = Math.min(
+            frameCount - 1,
+            Math.floor(scrollFraction * frameCount)
+        );
+
+        if (airbnb.frame !== frameIndex) {
+            airbnb.frame = frameIndex;
+            requestAnimationFrame(render);
+        }
+    }
 });
 
-// Jalankan saat pertama kali dibuka
-images[0].onload = render;
+// Pastikan render pertama kali saat gambar dimuat
+images[0].onload = () => {
+    render();
+};
+
+// Cek ulang jika window di-resize
 window.addEventListener("resize", render);
