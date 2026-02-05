@@ -177,33 +177,30 @@ window.addEventListener("scroll", () => {
 
     const section = document.getElementById('branch-info');
     const scrollTop = window.scrollY;
-    
-    // Titik mulai: saat bagian atas section benar-benar di depan mata
+    const winHeight = window.innerHeight;
     const sectionTop = section.offsetTop;
     const sectionHeight = section.offsetHeight;
-    const winHeight = window.innerHeight;
 
-    // KUNCINYA DI SINI: Kita persempit area hitung agar pergantian frame lebih lambat
-    const startAnim = sectionTop; 
-    const endAnim = sectionTop + (sectionHeight * 0.8); // Animasi selesai sebelum section habis
+    // TITIK MULAI: Saat bagian BAWAH layar menyentuh ATAS section
+    const startAnim = sectionTop - winHeight; 
+    
+    // TITIK SELESAI: Saat bagian ATAS layar menyentuh BAWAH section
+    const endAnim = sectionTop + sectionHeight;
 
     if (scrollTop >= startAnim && scrollTop <= endAnim) {
-        // Progress dihitung lebih detail
-        const scrollFraction = (scrollTop - startAnim) / (endAnim - startAnim);
+        // Hitung progress berdasarkan kemunculan section di layar
+        let progress = (scrollTop - startAnim) / (endAnim - startAnim);
         
+        // Memastikan nilai progress tetap di antara 0 dan 1
+        progress = Math.max(0, Math.min(1, progress));
+
         const frameIndex = Math.min(
             frameCount - 1,
-            Math.floor(scrollFraction * frameCount)
+            Math.floor(progress * frameCount)
         );
 
         if (airbnb.frame !== frameIndex) {
             airbnb.frame = frameIndex;
-            requestAnimationFrame(render);
-        }
-    } else if (scrollTop < startAnim) {
-        // Kunci di frame 0 agar pembukaan tetap terlihat saat di atas
-        if (airbnb.frame !== 0) {
-            airbnb.frame = 0;
             requestAnimationFrame(render);
         }
     }
@@ -220,7 +217,7 @@ window.onload = () => {
         let introFrame = 0;
         const introInterval = setInterval(() => {
             // Kita percepat sedikit durasi intervalnya tapi kurangi frame per step
-            if (!isInitialLoad || introFrame >= 80) { 
+            if (!isInitialLoad || introFrame >= 30) { 
                 clearInterval(introInterval);
             } else {
                 airbnb.frame = introFrame;

@@ -583,7 +583,7 @@ body {
 #branch-info {
     position: relative;
     overflow: hidden;
-    min-height: 120vh; /* Memberi ruang agar animasi terasa saat scroll */
+    min-height: 130vh; /* Memberi ruang agar animasi terasa saat scroll */
     background-color: #F6F5F0; /* Warna dasar krem */
 }
 
